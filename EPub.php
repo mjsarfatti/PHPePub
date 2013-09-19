@@ -64,6 +64,7 @@ class EPub {
     private $ncx = "";
     private $isFinalized = FALSE;
     private $isCoverImageSet = FALSE;
+    private $isTOCSet = FALSE;
 
     private $fileList = array();
 
@@ -237,7 +238,7 @@ class EPub {
      * @param String $baseDir Default is "", meaning it is pointing to the document root. NOT used if $externalReferences is set to EPub::EXTERNAL_REF_IGNORE.
      * @return bool $success
      */
-    function addChapter($chapterName, $fileName, $chapterData, $autoSplit = FALSE, $externalReferences = EPub::EXTERNAL_REF_IGNORE, $baseDir = "") {
+    function addChapter($chapterName, $fileName, $chapterData, $autoSplit = FALSE, $externalReferences = EPub::EXTERNAL_REF_IGNORE, $baseDir = "", $isTOC = false) {
         if ($this->isFinalized) {
             return FALSE;
         }
@@ -267,6 +268,10 @@ class EPub {
             $this->chapterCount++;
             $this->opf_manifest .= "\t\t<item id=\"chapter" . $this->chapterCount . "\" href=\"" . $fileName . "\" media-type=\"application/xhtml+xml\" />\n";
             $this->opf_spine .= "\t\t<itemref idref=\"chapter" . $this->chapterCount . "\" />\n";
+            if ($isTOC && !$this->isTOCSet) {
+                $this->opf_guide .= "\t\t<reference href=\"" . $fileName . "\" type=\"toc\" title=\"Table of Contents\"/>\n";
+                $this->isTOCSet = TRUE;
+            }
             $this->ncx_navmap .= "\n\t\t<navPoint id=\"chapter" . $this->chapterCount . "\" playOrder=\"" . $this->chapterCount . "\">\n\t\t\t<navLabel><text>" . $chapterName . "</text></navLabel>\n\t\t\t<content src=\"" . $fileName . "\" />\n\t\t</navPoint>\n";
         } else if (is_array($chapter)) {
             $fileNameParts = pathinfo($fileName);
