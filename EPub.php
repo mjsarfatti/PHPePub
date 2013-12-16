@@ -1433,7 +1433,7 @@ class EPub {
         $image = $this->getFileContents($source);
 
         if ($image !== FALSE && strlen($image) > 0) {
-            $imageFile = imagecreatefromstring($image);
+            $imageFile = @imagecreatefromstring($image);
             if ($imageFile !== false) {
                 $width = ImageSX($imageFile);
                 $height = ImageSY($imageFile);
